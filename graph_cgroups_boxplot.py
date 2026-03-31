@@ -147,6 +147,7 @@ if show_details:
 out_path = f"sched_ext/boxplot/{bench}{subject}_{udf}_{clients}_latency.pdf"
 os.makedirs(os.path.dirname(out_path), exist_ok=True)
 plt.savefig(out_path, format="pdf", bbox_inches="tight", pad_inches=0.05)
+print(f"Saved: {out_path}")
 
 #os.system(f'brave "{out_path}"')
 plt.show()

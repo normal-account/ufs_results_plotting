@@ -248,6 +248,7 @@ group_suffix = "_".join(groups.keys()).replace(" ", "_").replace("/", "_")
 out_path = f"sched_ext/barplot/barplot_{group_suffix}_{benchmark}_sched_client_{clients}.pdf"
 os.makedirs(os.path.dirname(out_path), exist_ok=True)
 plt.savefig(out_path, format="pdf")
+print(f"Saved: {out_path}")
 
 #os.system(f'brave "{out_path}"')
 plt.show()
