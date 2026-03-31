@@ -20,7 +20,7 @@ TRACKED_PIDS = [1158657, 1158658, 1158659, 1158660]
 # TRACKED_PIDS = [1167017, 1167018, 1167019, 1167020]
 ###################################################
 
-LOG_FILE = f"trace_tpcc_{SCHED}_4_4.log"
+LOG_FILE = f"log/trace_tpcc_{SCHED}_4_4.log"
 OUTPUT_FILE = f"benchmark_runtime_histogram_{SCHED}.pdf"
 CPUSET = "0,2,4,6"
 
