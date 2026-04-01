@@ -5,40 +5,21 @@ import numpy as np
 import os
 
 
-def formDataFrame(filename):
-    data = pd.read_csv(filename)
-    df = pd.DataFrame(data)
+############# CONFIGURATION ###############
+benchmark = "TPC-C"
+policy_labels = ["EEVDF", "Round-Robin", "UFS"]
+clients = "8"
 
-    df['timestamp_us'] = df['Start Time (microseconds)']
-    df['timestamp_us'] = df['timestamp_us'] - df['timestamp_us'].iloc[0]
-    df['Latency (microseconds)'] = df['Latency (microseconds)'] / 1000.0
-
-    total_time_sec = 60
-    total_ops = len(df)
-    throughput = total_ops / total_time_sec if total_time_sec > 0 else 0
-
-    return df, throughput
+policy_colors = {
+    "EEVDF": "#66c2a5",
+    "Round-Robin": "#fc8d62",
+    "UFS": "#8da0cb",
+}
+###########################################
 
 
-def format_tput(v: float) -> str:
-    if abs(v - round(v)) < 0.05:
-        return f"{int(round(v))}"
-    return f"{v:.1f}"
+########### TEMPLATE CONFIG ###############
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--details",
-    action="store_true",
-    help="Show the latency table and plot title."
-)
-args = parser.parse_args()
-
-show_details = args.details
-
-
-# =====================================================================
-# TEMPLATE CONFIG
 # UNCOMMENT THE BELOW CONFIGURATIONS DEPENDING ON THE EXPERIMENT TO PLOT.
 
 ### CONFIGURATION 1
@@ -110,18 +91,39 @@ groups = {
 #         "UFS":          "results/client_32_8_ycsb_ufs.csv"
 #     }
 # }
+###########################################
 
-### CHANGE THE BELOW VALUES AS NEEDED.
-benchmark = "TPC-C"
-policy_labels = ["EEVDF", "Round-Robin", "UFS"]
-clients = "8"
 
-policy_colors = {
-    "EEVDF": "#66c2a5",
-    "Round-Robin": "#fc8d62",
-    "UFS": "#8da0cb",
-}
-# =====================================================================
+def formDataFrame(filename):
+    data = pd.read_csv(filename)
+    df = pd.DataFrame(data)
+
+    df['timestamp_us'] = df['Start Time (microseconds)']
+    df['timestamp_us'] = df['timestamp_us'] - df['timestamp_us'].iloc[0]
+    df['Latency (microseconds)'] = df['Latency (microseconds)'] / 1000.0
+
+    total_time_sec = 60
+    total_ops = len(df)
+    throughput = total_ops / total_time_sec if total_time_sec > 0 else 0
+
+    return df, throughput
+
+
+def format_tput(v: float) -> str:
+    if abs(v - round(v)) < 0.05:
+        return f"{int(round(v))}"
+    return f"{v:.1f}"
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--details",
+    action="store_true",
+    help="Show the latency table and plot title."
+)
+args = parser.parse_args()
+
+show_details = args.details
 
 stats = {g: {} for g in groups.keys()}
 table_rows = []

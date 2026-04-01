@@ -10,17 +10,17 @@ import matplotlib.pyplot as plt
 
 
 # Uncomment one of the 2 configs below, depending on the scheduler to plot
-###################################################
+############# CONFIGURATION ###############
 ### EEVDF config
 SCHED = "eevdf"
-TRACKED_PIDS = [1158657, 1158658, 1158659, 1158660]
+TRACKED_PIDS = [1175032, 1175033, 1175034, 1175035]
 
 ### UFS config
 # SCHED = "ufs"
 # TRACKED_PIDS = [1167017, 1167018, 1167019, 1167020]
-###################################################
+###########################################
 
-LOG_FILE = f"log/trace_tpcc_{SCHED}_4_4.log"
+LOG_FILE = f"log/trace_tpcc_{SCHED}_4_4_4.log"
 OUTPUT_FILE = f"benchmark_runtime_histogram_{SCHED}.pdf"
 CPUSET = "0,2,4,6"
 
@@ -97,7 +97,9 @@ def plot_histogram(runtime_by_cpu, cpus_sorted, output_path):
     plt.close()
 
     print(f"Saved: {output_path}")
-    os.system(f"brave \"{output_path}\"")
+
+    #os.system(f"brave \"{output_path}\"")
+    plt.show()
 
 
 allowed_cpus = parse_cpuset(CPUSET)

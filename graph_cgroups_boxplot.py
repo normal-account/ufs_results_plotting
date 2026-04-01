@@ -4,6 +4,24 @@ import pandas as pd
 import numpy as np
 import os
 
+############# CONFIGURATION ###############
+bench = "TPC-C"
+udf = "TPC-H UDFs"
+subject = "Latency"
+key = "Latency (microseconds)"
+clients = "8"
+
+keyword_eevdf = "EEVDF"
+keyword_sched = "UFS"
+keyword_rr = "Round-Robin"
+
+policy_colors = {
+    "EEVDF": "#66c2a5",
+    "Round-Robin": "#fc8d62",
+    "UFS": "#8da0cb",
+}
+###########################################
+
 
 def formDataFrame(filename):
     data = pd.read_csv(filename)
@@ -19,6 +37,10 @@ def formDataFrame(filename):
 
     return df, throughput
 
+df_eevdf, t_eevdf = formDataFrame("results/client_8_8_tpcc_eevdf.csv")
+df_rr, t_rr = formDataFrame("results/client_8_8_tpcc_rr.csv")
+df_sched, t_sched = formDataFrame("results/client_8_8_tpcc_ufs.csv")
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -30,33 +52,13 @@ args = parser.parse_args()
 
 show_details = args.details
 
-bench = "TPC-C"
-udf = "TPC-H UDFs"
-subject = "Latency"
-key = "Latency (microseconds)"
-clients = "8"
-
-df_eevdf, t_eevdf = formDataFrame("results/client_8_8_tpcc_eevdf.csv")
-df_fifo, t_fifo = formDataFrame("results/client_8_8_tpcc_rr.csv")
-df_sched, t_sched = formDataFrame("results/client_8_8_tpcc_ufs.csv")
-
-keyword_eevdf = "EEVDF"
-keyword_sched = "UFS"
-keyword_fifo = "Round-Robin"
-
-policy_colors = {
-    "EEVDF": "#66c2a5",
-    "Round-Robin": "#fc8d62",
-    "UFS": "#8da0cb",
-}
-
 if show_details:
     fig, ax1 = plt.subplots(figsize=(24, 13))
 else:
     fig, ax1 = plt.subplots(figsize=(20, 10))
 
-box_data = [df_eevdf[key], df_fifo[key].values, df_sched[key].values]
-box_labels = [keyword_eevdf, keyword_fifo, keyword_sched]
+box_data = [df_eevdf[key], df_rr[key].values, df_sched[key].values]
+box_labels = [keyword_eevdf, keyword_rr, keyword_sched]
 
 bp = ax1.boxplot(
     box_data,
@@ -119,7 +121,7 @@ for label, series in zip(box_labels, box_data):
 if show_details:
     data = [
         [keyword_eevdf, f"{df_eevdf[key].mean():.2f}", f"{df_eevdf[key].quantile(0.95):.2f}", f"{t_eevdf:.2f}"],
-        [keyword_fifo, f"{df_fifo[key].mean():.2f}", f"{df_fifo[key].quantile(0.95):.2f}", f"{t_fifo:.2f}"],
+        [keyword_rr, f"{df_rr[key].mean():.2f}", f"{df_rr[key].quantile(0.95):.2f}", f"{t_rr:.2f}"],
         [keyword_sched, f"{df_sched[key].mean():.2f}", f"{df_sched[key].quantile(0.95):.2f}", f"{t_sched:.2f}"],
     ]
     columns = ["Measure", "Mean latency (ms)", "95th Percentile latency (ms)", "Throughput (tps)"]
