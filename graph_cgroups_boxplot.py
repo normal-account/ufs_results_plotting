@@ -16,9 +16,9 @@ keyword_sched = "UFS"
 keyword_rr = "Round-Robin"
 
 policy_colors = {
-    "EEVDF": "#66c2a5",
-    "Round-Robin": "#fc8d62",
-    "UFS": "#8da0cb",
+    "EEVDF": "#e6e6e6",
+    "Round-Robin": "#d493b8",
+    "UFS": "#9ccc65",
 }
 ###########################################
 
