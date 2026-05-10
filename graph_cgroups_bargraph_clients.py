@@ -8,14 +8,19 @@ import os
 ############# CONFIGURATION ###############
 benchmark = "IWL"
 udf_label = "BWL"
-policy_labels = ["EEVDF", "RR", "UFS"]
+
 clients = "8"
 
+
+policy_labels = ["EEVDF", "IDLE", "FIFO", "RR", "UFS"]
 policy_colors = {
-    "EEVDF": "#e6e6e6",
-    "RR": "#d493b8",
-    "UFS": "#9ccc65",
+    "EEVDF": "#f7f7f7",
+    "IDLE": "#d9d9d9",
+    "FIFO": "#e9a3c9",
+    "RR": "#c51b7d",
+    "UFS": "#b8e186",
 }
+
 
 ###########################################
 
@@ -25,127 +30,276 @@ policy_colors = {
 # UNCOMMENT THE BELOW CONFIGURATIONS DEPENDING ON THE EXPERIMENT TO PLOT.
 
 ### CONFIGURATION 1
-### TPC-C EXPERIMENT: PERFORMANCE OF THE 3 SCHEDULERS UNDER DIFFERENT SETTINGS
-groups = {
-    "SOLO": {
-        "EEVDF":        "results/client_8_0_tpcc_eevdf.csv",
-        "RR":  "results/client_8_0_tpcc_rr.csv",
-        "UFS":          "results/client_8_0_tpcc_ufs.csv"
-    },
-    "MIN:MAX": {
-        "EEVDF":        "results/client_8_8_tpcc_eevdf.csv",
-        "RR":  "results/client_8_8_tpcc_rr.csv",
-        "UFS":          "results/client_8_8_tpcc_ufs.csv"
-    },
-    "50:50 MIX": {
-        "EEVDF":        "results/client_8_8_tpcc_eevdf_same_prio.csv",
-        "RR":  "results/client_8_8_tpcc_rr_same_prio.csv",
-        "UFS":          "results/client_8_8_tpcc_ufs_same_prio.csv"
-    }
-}
+### TPC-C EXPERIMENT: PERFORMANCE OF THE SCHEDULERS UNDER DIFFERENT SETTINGS
+# groups = {
+#     "filename": "plot_solo_vs_mixed.pdf",
+#     "mixes": {
+#         "SOLO": {
+#             "EEVDF":        "results/client_8_0_tpcc_eevdf.csv",
+#             "IDLE":         "results/client_8_0_tpcc_eevdf.csv",
+#             "RR":           "results/client_8_0_tpcc_rr.csv",
+#             "FIFO":         "results/client_8_0_tpcc_ff.csv",
+#             "UFS":          "results/client_8_0_tpcc_ufs.csv"
+#         },
+#         "MIN:MAX": {
+#             "EEVDF":        "results/client_8_8_tpcc_eevdf.csv",
+#             "IDLE":         "results/client_8_8_tpcc_idle.csv",
+#             "RR":           "results/client_8_8_tpcc_rr.csv",
+#             "FIFO":         "results/client_8_8_tpcc_ff.csv",
+#             "UFS":          "results/client_8_8_tpcc_ufs.csv"
+#         },
+#         "50:50 MIX": {
+#             "EEVDF":        "results/client_8_8_tpcc_eevdf_same_prio.csv",
+#             "IDLE":         "results/client_8_8_tpcc_idle_same_prio.csv",
+#             "RR":           "results/client_8_8_tpcc_rr_same_prio.csv",
+#             "FIFO":         "results/client_8_8_tpcc_ff_same_prio.csv",
+#             "UFS":          "results/client_8_8_tpcc_ufs_same_prio.csv"
+#         }
+#     }
+# }
 
-udf_groups = {
-    "SOLO": {
-        "EEVDF":        "results/udf_0_8_eevdf.csv",
-        "RR":  "results/udf_0_8_rr.csv",
-        "UFS":          "results/udf_0_8_ufs.csv"
-    },
-    "MIN:MAX": {
-        "EEVDF":        "results/udf_8_8_eevdf.csv",
-        "RR":  "results/udf_8_8_rr.csv",
-        "UFS":          "results/udf_8_8_ufs.csv"
-    },
-    "50:50 MIX": {
-        "EEVDF":        "results/udf_8_8_eevdf_same_prio.csv",
-        "RR":  "results/udf_8_8_rr_same_prio.csv",
-        "UFS":          "results/udf_8_8_ufs_same_prio.csv"
-    }
-}
+# udf_groups = {
+#     "SOLO": {
+#         "EEVDF":        "results/udf_0_8_eevdf.csv",
+#         "IDLE":         "results/udf_0_8_idle.csv",
+#         "RR":           "results/udf_0_8_rr.csv",
+#         "FIFO":         "results/udf_0_8_ff.csv",
+#         "UFS":          "results/udf_0_8_ufs.csv"
+#     },
+#     "MIN:MAX": {
+#         "EEVDF":        "results/udf_8_8_eevdf.csv",
+#         "IDLE":         "results/udf_8_8_idle.csv",
+#         "RR":           "results/udf_8_8_rr.csv",
+#         "FIFO":         "results/udf_8_8_ff.csv",
+#         "UFS":          "results/udf_8_8_ufs.csv"
+#     },
+#     "50:50 MIX": {
+#         "EEVDF":        "results/udf_8_8_eevdf_same_prio.csv",
+#         "IDLE":         "results/udf_8_8_idle_same_prio.csv",
+#         "RR":           "results/udf_8_8_rr_same_prio.csv",
+#         "FIFO":         "results/udf_8_8_ff_same_prio.csv",
+#         "UFS":          "results/udf_8_8_ufs_same_prio.csv"
+#     }
+# }
+
+
+### CONFIGURATION 1 BUT WITH SCHEDULER-HINTING
+### TPC-C EXPERIMENT: PERFORMANCE OF THE SCHEDULERS UNDER DIFFERENT SETTINGS
+# groups = {
+#     "filename": "plot_solo_vs_mixed_with_hinting.pdf",
+#     "mixes": {
+#         "SOLO": {
+#             "EEVDF":        "results_overhead/client_8_0_tpcc_eevdf.csv",
+#             "IDLE":         "results_overhead/client_8_0_tpcc_eevdf.csv",
+#             "RR":           "results_overhead/client_8_0_tpcc_rr.csv",
+#             "FIFO":         "results_overhead/client_8_0_tpcc_ff.csv",
+#             "UFS":          "results_overhead/client_8_0_tpcc_ufs.csv"
+#         },
+#         "MIN:MAX": {
+#             "EEVDF":        "results_overhead/client_8_8_tpcc_eevdf.csv",
+#             "IDLE":         "results_overhead/client_8_8_tpcc_idle.csv",
+#             "RR":           "results_overhead/client_8_8_tpcc_rr.csv",
+#             "FIFO":         "results_overhead/client_8_8_tpcc_ff.csv",
+#             "UFS":          "results_overhead/client_8_8_tpcc_ufs.csv"
+#         },
+#         "50:50 MIX": {
+#             "EEVDF":        "results_overhead/client_8_8_tpcc_eevdf_same_prio.csv",
+#             "IDLE":         "results_overhead/client_8_8_tpcc_idle_same_prio.csv",
+#             "RR":           "results_overhead/client_8_8_tpcc_rr_same_prio.csv",
+#             "FIFO":         "results_overhead/client_8_8_tpcc_ff_same_prio.csv",
+#             "UFS":          "results_overhead/client_8_8_tpcc_ufs_same_prio.csv"
+#         }
+#     }
+# }
+
+# udf_groups = {
+#     "SOLO": {
+#         "EEVDF":        "results_overhead/udf_0_8_eevdf.csv",
+#         "IDLE":         "results_overhead/udf_0_8_idle.csv",
+#         "RR":           "results_overhead/udf_0_8_rr.csv",
+#         "FIFO":         "results_overhead/udf_0_8_ff.csv",
+#         "UFS":          "results_overhead/udf_0_8_ufs.csv"
+#     },
+#     "MIN:MAX": {
+#         "EEVDF":        "results_overhead/udf_8_8_eevdf.csv",
+#         "IDLE":         "results_overhead/udf_8_8_idle.csv",
+#         "RR":           "results_overhead/udf_8_8_rr.csv",
+#         "FIFO":         "results_overhead/udf_8_8_ff.csv",
+#         "UFS":          "results_overhead/udf_8_8_ufs.csv"
+#     },
+#     "50:50 MIX": {
+#         "EEVDF":        "results_overhead/udf_8_8_eevdf_same_prio.csv",
+#         "IDLE":         "results_overhead/udf_8_8_idle_same_prio.csv",
+#         "RR":           "results_overhead/udf_8_8_rr_same_prio.csv",
+#         "FIFO":         "results_overhead/udf_8_8_ff_same_prio.csv",
+#         "UFS":          "results_overhead/udf_8_8_ufs_same_prio.csv"
+#     }
+# }
 
 ### CONFIGURATION 2
 ### TPC-C EXPERIMENT: THROUGHPUT W.R.T. NUMBER OF CLIENTS (OVERSUBSCRIPTION)
 # groups = {
-#     "8B/8I": {
-#         "EEVDF": "results/client_8_8_tpcc_eevdf.csv",
-#         "RR":    "results/client_8_8_tpcc_rr.csv",
-#         "UFS":   "results/client_8_8_tpcc_ufs.csv"
-#     },
-#     "8B/16I": {
-#         "EEVDF": "results/client_16_8_tpcc_eevdf.csv",
-#         "RR":    "results/client_16_8_tpcc_rr.csv",
-#         "UFS":   "results/client_16_8_tpcc_ufs.csv"
-#     },
-#     "8B/24I": {
-#         "EEVDF": "results/client_24_8_tpcc_eevdf.csv",
-#         "RR":    "results/client_24_8_tpcc_rr.csv",
-#         "UFS":   "results/client_24_8_tpcc_ufs.csv"
-#     },
-#     # "32 TPC-C vs 8 UDFs": {
-#     #     "EEVDF":        "results/client_32_8_tpcc_eevdf.csv",
-#     #     "RR":  "results/client_32_8_tpcc_rr.csv",
-#     #     "UFS":          "results/client_32_8_tpcc_ufs.csv"
-#     # }
+#     "filename": "plot_tpcc_oversubscription.pdf",
+#     "mixes": {
+#         "8B/8I": {
+#             "EEVDF": "results/client_8_8_tpcc_eevdf.csv",
+#             "RR":    "results/client_8_8_tpcc_rr.csv",
+#             "UFS":   "results/client_8_8_tpcc_ufs.csv"
+#         },
+#         "8B/16I": {
+#             "EEVDF": "results/client_16_8_tpcc_eevdf.csv",
+#             "RR":    "results/client_16_8_tpcc_rr.csv",
+#             "UFS":   "results/client_16_8_tpcc_ufs.csv"
+#         },
+#         "8B/24I": {
+#             "EEVDF": "results/client_24_8_tpcc_eevdf.csv",
+#             "RR":    "results/client_24_8_tpcc_rr.csv",
+#             "UFS":   "results/client_24_8_tpcc_ufs.csv"
+#         },
+#         # "32 TPC-C vs 8 UDFs": {
+#         #     "EEVDF": "results/client_32_8_tpcc_eevdf.csv",
+#         #     "RR":    "results/client_32_8_tpcc_rr.csv",
+#         #     "UFS":   "results/client_32_8_tpcc_ufs.csv"
+#         # }
+#     }
 # }
 
 # udf_groups = {
 
 # }
+
 
 ### CONFIGURATION 3
 ### YCSB EXPERIMENT: THROUGHPUT W.R.T NUMBER OF CLIENTS (OVERSUBSCRIPTION)
 # benchmark = "YCSB"
 # groups = {
-#     "Baseline (8 YCSB vs 8 UDFs)": {
-#         "EEVDF":        "results/client_8_8_ycsb_eevdf.csv",
-#         "RR":  "results/client_8_8_ycsb_rr.csv",
-#         "UFS":          "results/client_8_8_ycsb_ufs.csv"
-#     },
-#     "16 YCSB vs 8 UDFs": {
-#         "EEVDF":        "results/client_16_8_ycsb_eevdf.csv",
-#         "RR":  "results/client_16_8_ycsb_rr.csv",
-#         "UFS":          "results/client_16_8_ycsb_ufs.csv"
-#     },
-#     "24 YCSB vs 8 UDFs": {
-#         "EEVDF":        "results/client_24_8_ycsb_eevdf.csv",
-#         "RR":  "results/client_24_8_ycsb_rr.csv",
-#         "UFS":          "results/client_24_8_ycsb_ufs.csv"
-#     },
-#     "32 YCSB vs 8 UDFs": {
-#         "EEVDF":        "results/client_32_8_ycsb_eevdf.csv",
-#         "RR":  "results/client_32_8_ycsb_rr.csv",
-#         "UFS":          "results/client_32_8_ycsb_ufs.csv"
+#     "filename": "plot_ycsb_oversubscription.pdf",
+#     "mixes": {
+#         "Baseline (8 YCSB vs 8 UDFs)": {
+#             "EEVDF": "results/client_8_8_ycsb_eevdf.csv",
+#             "RR":    "results/client_8_8_ycsb_rr.csv",
+#             "UFS":   "results/client_8_8_ycsb_ufs.csv"
+#         },
+#         "16 YCSB vs 8 UDFs": {
+#             "EEVDF": "results/client_16_8_ycsb_eevdf.csv",
+#             "RR":    "results/client_16_8_ycsb_rr.csv",
+#             "UFS":   "results/client_16_8_ycsb_ufs.csv"
+#         },
+#         "24 YCSB vs 8 UDFs": {
+#             "EEVDF": "results/client_24_8_ycsb_eevdf.csv",
+#             "RR":    "results/client_24_8_ycsb_rr.csv",
+#             "UFS":   "results/client_24_8_ycsb_ufs.csv"
+#         },
+#         "32 YCSB vs 8 UDFs": {
+#             "EEVDF": "results/client_32_8_ycsb_eevdf.csv",
+#             "RR":    "results/client_32_8_ycsb_rr.csv",
+#             "UFS":   "results/client_32_8_ycsb_ufs.csv"
+#         }
 #     }
 # }
 #
 # udf_groups = {
 #     "Baseline (8 YCSB vs 8 UDFs)": {
-#         "EEVDF":        "results/udf_8_8_eevdf.csv",
-#         "RR":  "results/udf_8_8_rr.csv",
-#         "UFS":          "results/udf_8_8_ufs.csv"
+#         "EEVDF": "results/udf_8_8_eevdf.csv",
+#         "RR":    "results/udf_8_8_rr.csv",
+#         "UFS":   "results/udf_8_8_ufs.csv"
 #     },
 #     "16 YCSB vs 8 UDFs": {
-#         "EEVDF":        "results/udf_16_8_eevdf.csv",
-#         "RR":  "results/udf_16_8_rr.csv",
-#         "UFS":          "results/udf_16_8_ufs.csv"
+#         "EEVDF": "results/udf_16_8_eevdf.csv",
+#         "RR":    "results/udf_16_8_rr.csv",
+#         "UFS":   "results/udf_16_8_ufs.csv"
 #     },
 #     "24 YCSB vs 8 UDFs": {
-#         "EEVDF":        "results/udf_24_8_eevdf.csv",
-#         "RR":  "results/udf_24_8_rr.csv",
-#         "UFS":          "results/udf_24_8_ufs.csv"
+#         "EEVDF": "results/udf_24_8_eevdf.csv",
+#         "RR":    "results/udf_24_8_rr.csv",
+#         "UFS":   "results/udf_24_8_ufs.csv"
 #     },
 #     "32 YCSB vs 8 UDFs": {
-#         "EEVDF":        "results/udf_32_8_eevdf.csv",
-#         "RR":  "results/udf_32_8_rr.csv",
-#         "UFS":          "results/udf_32_8_ufs.csv"
+#         "EEVDF": "results/udf_32_8_eevdf.csv",
+#         "RR":    "results/udf_32_8_rr.csv",
+#         "UFS":   "results/udf_32_8_ufs.csv"
 #     }
 # }
 ###########################################
+
+
+
+### CONFIGURATION 4
+### TPC-C EXPERIMENT: PERFORMANCE OF EEVDF AND UFS UNDER MIXED-PRIORITIES
+groups = {
+    "filename": "plot_mixed_priorities.pdf",
+    "mixes": {
+        "6667:2": {
+            "EEVDF":        "results/client_8_8_tpcc_eevdf_prio_mix_low.csv",
+            "UFS":          "results/client_8_8_tpcc_ufs_prio_mix_low.csv"
+        },
+        "10000:3": {
+            "EEVDF":        "results/client_8_8_tpcc_eevdf_prio_mix_high.csv",
+            "UFS":          "results/client_8_8_tpcc_ufs_prio_mix_high.csv",
+        },
+    }
+}
+
+udf_groups = {
+    "6667:2": {
+        "EEVDF":        "results/udf_16_16_eevdf_split_lw.csv",
+        "UFS":          "results/udf_16_16_ufs_split_lw.csv"
+    },
+    "10000:3": {
+        "EEVDF":        "results/udf_16_16_eevdf_split_lw_high.csv",
+        "UFS":          "results/udf_16_16_ufs_split_lw_high.csv"
+    }
+}
+
+
+### CONFIGURATION 5
+### TPC-C EXPERIMENT: PERFORMANCE OF EEVDF AND UFS FOR ML WORKLOADS
+# groups = {
+#     "filename": "plot_madlib.pdf",
+#     "mixes": {
+#         "SOLO": {
+#             "EEVDF":        "results/client_8_0_tpcc_eevdf.csv",
+#             "UFS":          "results/client_8_0_tpcc_ufs.csv",
+#             "RR":           "results/client_8_0_tpcc_rr.csv"
+#         },
+#         "MIN:MAX": {
+#             "EEVDF":        "results/client_8_8_tpcc_eevdf_madlib.csv",
+#             "UFS":          "results/client_8_8_tpcc_ufs_madlib.csv",
+#             "RR":           "results/client_8_8_tpcc_rr_madlib.csv"
+#         },
+#         "50:50": {
+#             "EEVDF":        "results/client_8_8_tpcc_eevdf_madlib_same_prio.csv",
+#             "UFS":          "results/client_8_8_tpcc_ufs_madlib_same_prio.csv",
+#             "RR":           "results/client_8_8_tpcc_rr_madlib_same_prio.csv"
+#         }
+#     }
+# }
+# udf_groups = {
+#     "SOLO": {
+#             "EEVDF":        "results/madlib_0_8_eevdf.csv",
+#             "UFS":          "results/madlib_0_8_eevdf.csv",
+#             "RR":           "results/madlib_0_8_eevdf.csv"
+#         },
+#     "MIN:MAX": {
+#         "EEVDF":        "results/madlib_8_8_eevdf.csv",
+#         "UFS":          "results/madlib_8_8_ufs.csv",
+#         "RR":           "results/madlib_8_8_rr.csv",
+#     },
+#     "50:50": {
+#         "EEVDF":        "results/madlib_8_8_eevdf_same_prio.csv",
+#         "UFS":          "results/madlib_8_8_ufs_same_prio.csv",
+#         "RR":           "results/madlib_8_8_rr_same_prio.csv",
+#     },
+# }
+
+
 
 
 def formDataFrame(filename):
     data = pd.read_csv(filename)
     df = pd.DataFrame(data)
 
+    print(filename)
     df['timestamp_us'] = df['Start Time (microseconds)']
     df['timestamp_us'] = df['timestamp_us'] - df['timestamp_us'].iloc[0]
     df['Latency (microseconds)'] = df['Latency (microseconds)'] / 1000.0
@@ -189,6 +343,16 @@ def nice_tick_step(max_val: float) -> float:
     return float(10 * magnitude)
 
 
+if "filename" not in groups:
+    raise KeyError("groups must define a top-level 'filename' field")
+
+if "mixes" not in groups:
+    raise KeyError("groups must define a top-level 'mixes' field")
+
+output_filename = groups["filename"]
+groups = groups["mixes"]
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--details",
@@ -203,15 +367,45 @@ has_udf = bool(udf_groups)
 if has_udf and list(groups.keys()) != list(udf_groups.keys()):
     raise ValueError("groups and udf_groups must define the same group names in the same order")
 
+
+def policy_present_everywhere(policy: str) -> bool:
+    """
+    A policy is active only if it is present in every client group,
+    and, when UDF data is enabled, every UDF group as well.
+    Missing policies are ignored instead of causing the script to fail.
+    """
+    if any(policy not in file_dict for file_dict in groups.values()):
+        return False
+
+    if has_udf and any(policy not in file_dict for file_dict in udf_groups.values()):
+        return False
+
+    return True
+
+
+active_policy_labels = [
+    policy for policy in policy_labels
+    if policy_present_everywhere(policy)
+]
+
+ignored_policy_labels = [
+    policy for policy in policy_labels
+    if policy not in active_policy_labels
+]
+
+if not active_policy_labels:
+    raise ValueError("No policies from policy_labels are present in the selected experiment")
+
+if ignored_policy_labels:
+    print(f"Ignoring missing policies: {', '.join(ignored_policy_labels)}")
+
+
 stats = {g: {} for g in groups.keys()}
 udf_stats = {g: {} for g in udf_groups.keys()} if has_udf else {}
 table_rows = []
 
 for group_name, file_dict in groups.items():
-    for policy in policy_labels:
-        if policy not in file_dict:
-            raise KeyError(f"Group '{group_name}' missing policy '{policy}' in groups[...] mapping")
-
+    for policy in active_policy_labels:
         csv_path = file_dict[policy]
         df, tput = formDataFrame(csv_path)
 
@@ -239,10 +433,7 @@ for group_name, file_dict in groups.items():
 
 if has_udf:
     for group_name, file_dict in udf_groups.items():
-        for policy in policy_labels:
-            if policy not in file_dict:
-                raise KeyError(f"Group '{group_name}' missing policy '{policy}' in udf_groups[...] mapping")
-
+        for policy in active_policy_labels:
             csv_path = file_dict[policy]
             udf_tput = read_udf_throughput(csv_path)
 
@@ -252,7 +443,7 @@ if has_udf:
 
 group_names = list(groups.keys())
 num_groups = len(group_names)
-num_policies = len(policy_labels)
+num_policies = len(active_policy_labels)
 
 x = np.arange(num_groups)
 total_width = 0.78
@@ -282,10 +473,11 @@ else:
 
 client_global_max = 0.0
 udf_global_max = 0.0
-legend_handles = []
-legend_labels = []
 
-for pi, policy in enumerate(policy_labels):
+client_legend_handles = {}
+udf_legend_handles = {}
+
+for pi, policy in enumerate(active_policy_labels):
     client_vals = [stats[group_name][policy]["tput"] for group_name in group_names]
     offsets = x + (start + pi * bar_width)
 
@@ -303,6 +495,8 @@ for pi, policy in enumerate(policy_labels):
         padding=4,
         fontsize=14
     )
+
+    client_legend_handles[policy] = client_bars[0]
 
     if has_udf:
         udf_vals = [udf_stats[group_name][policy]["tput"] for group_name in group_names]
@@ -325,8 +519,7 @@ for pi, policy in enumerate(policy_labels):
             fontsize=14
         )
 
-        legend_handles.extend([client_bars[0], udf_bars[0]])
-        legend_labels.extend([f"{policy}/{benchmark}", f"{policy}/{udf_label}"])
+        udf_legend_handles[policy] = udf_bars[0]
         udf_global_max = max(udf_global_max, max(udf_vals))
 
     client_global_max = max(client_global_max, max(client_vals))
@@ -368,7 +561,26 @@ if has_udf:
 ax.grid(axis="y", alpha=0.35)
 
 if has_udf:
-    ax.legend(legend_handles, legend_labels, fontsize=15, ncols=3, loc="upper center")
+    legend_handles = []
+    legend_labels = []
+
+    for policy in active_policy_labels:
+        legend_handles.extend([
+            client_legend_handles[policy],
+            udf_legend_handles[policy],
+        ])
+        legend_labels.extend([
+            f"{policy}/{benchmark}",
+            f"{policy}/{udf_label}",
+        ])
+
+    ax.legend(
+        legend_handles,
+        legend_labels,
+        fontsize=15,
+        ncols=num_policies,
+        loc="upper center"
+    )
 
     pos_limit = client_global_max * 1.22
     neg_limit = udf_global_max * 1.45
@@ -421,15 +633,11 @@ if show_details:
 else:
     plt.tight_layout()
 
-group_suffix = "_".join(groups.keys()).replace(" ", "_").replace("/", "_")
-if has_udf:
-    out_path = f"sched_ext/barplot/barplot_{group_suffix}_{benchmark}_sched_client_udf_{clients}.pdf"
-else:
-    out_path = f"sched_ext/barplot/barplot_{group_suffix}_{benchmark}_sched_client_{clients}.pdf"
+out_path = os.path.join("sched_ext/barplot", output_filename)
 
 os.makedirs(os.path.dirname(out_path), exist_ok=True)
 plt.savefig(out_path, format="pdf")
 print(f"Saved: {out_path}")
 
-#os.system(f'brave "{out_path}"')
-plt.show()
+os.system(f'brave "{out_path}"')
+# plt.show()

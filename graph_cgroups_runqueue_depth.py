@@ -162,20 +162,20 @@ def parse_data(trace_file, TRACKED_PIDS, CPUSET):
 
 
 def plot_and_save(loads, CPUSET):
+    plt.rcParams["font.family"] = "sans-serif"
+    plt.rcParams["axes.axisbelow"] = True
+    plt.rcParams["font.size"] = 16
+
     fig, ax = plt.subplots(figsize=FIG_SIZE)
 
     fig.text(
         0.09, 0.5,
-        "Runnable tasks per CPU",
+        "Per-CPU Runqueue Depth",
         va="center",
         ha="center",
         rotation="vertical",
-        fontsize=11,
-        fontweight="bold",
+        fontsize=22
     )
-    
-    plt.rcParams["font.family"] = "sans-serif"
-    plt.rcParams["axes.axisbelow"] = True
 
     window_end = SKIP_SECONDS + DURATION_S
     max_depth = len(TRACKED_PIDS)
@@ -225,10 +225,8 @@ def plot_and_save(loads, CPUSET):
             linewidth=0.01,
         )
 
-        # lane baseline
         ax.axhline(base, color="black", linewidth=0.7, alpha=0.5)
 
-        # horizontal guides and numeric depth labels within each lane
         for d in range(1, max_depth + 1):
             y = base + d
             ax.axhline(y, color="black", linewidth=0.35, alpha=0.12)
@@ -238,44 +236,37 @@ def plot_and_save(loads, CPUSET):
                 str(d),
                 va="center",
                 ha="right",
-                fontsize=8,
+                fontsize=14,
                 color="black",
                 clip_on=False,
             )
 
-        # CPU label centered on the lane
         ax.text(
             -0.040,
             base + max_depth / 2.0,
             f"CPU {cpu}",
             va="center",
             ha="right",
-            fontsize=10,
-            fontweight="bold",
+            fontsize=17,
             clip_on=False,
         )
 
-        # threshold line for contention
         ax.axhline(base + 1, color="#C0392B", linestyle="--", linewidth=1.0, alpha=0.6)
 
     total_height = len(CPUSET) * lane_span - lane_gap
     ax.set_ylim(0, total_height)
     ax.set_xlim(0, DURATION_S)
 
-    # no default y tick labels as we draw our own
     ax.set_yticks([])
-
-    ax.set_xlabel("Time (s)", fontsize=10, fontweight="bold")
-    ax.set_title("Per-CPU Runqueue Depth Over Time (EEVDF)", fontsize=11, fontweight="bold")
+    ax.set_xlabel("Time (s)", fontsize=18)
     ax.grid(True, axis="x", linestyle=":", alpha=0.6)
+    ax.tick_params(axis="x", labelsize=15)
 
     plt.subplots_adjust(left=0.20)
     print(f"Saved: {OUTPUT_PATH}")
     plt.savefig(OUTPUT_PATH, bbox_inches="tight")
-    
-    #os.system(f'brave "{OUTPUT_PATH}"')
-    plt.show()
-
+    #plt.show()
+    os.system(f'brave "{OUTPUT_PATH}"')
 
 loads = parse_data(TRACE_FILE, TRACKED_PIDS, CPUSET)
 plot_and_save(loads, CPUSET)

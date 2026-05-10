@@ -37,9 +37,14 @@ def formDataFrame(filename):
 
     return df, throughput
 
-df_eevdf, t_eevdf = formDataFrame("results/client_8_8_tpcc_eevdf.csv")
-df_rr, t_rr = formDataFrame("results/client_8_8_tpcc_rr.csv")
-df_sched, t_sched = formDataFrame("results/client_8_8_tpcc_ufs.csv")
+df_eevdf, t_eevdf = formDataFrame("results/client_8_0_tpcc_eevdf.csv")
+df_rr, t_rr = formDataFrame("results/client_8_0_tpcc_rr.csv")
+df_sched, t_sched = formDataFrame("results/client_8_0_tpcc_ufs.csv")
+
+
+# df_eevdf, t_eevdf = formDataFrame("results/client_8_8_tpcc_eevdf_same_prio.csv")
+# df_rr, t_rr = formDataFrame("results/client_8_8_tpcc_rr_same_prio.csv")
+# df_sched, t_sched = formDataFrame("results/client_8_8_tpcc_ufs_same_prio.csv")
 
 
 parser = argparse.ArgumentParser()
@@ -151,5 +156,5 @@ os.makedirs(os.path.dirname(out_path), exist_ok=True)
 plt.savefig(out_path, format="pdf", bbox_inches="tight", pad_inches=0.05)
 print(f"Saved: {out_path}")
 
-#os.system(f'brave "{out_path}"')
-plt.show()
+os.system(f'brave "{out_path}"')
+#plt.show()
